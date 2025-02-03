@@ -16,9 +16,8 @@ const DEFAULT_SETTINGS: SettingsType = {
   decayConstant: 0.1,
 };
 
-const CODEFORCES_RATINGS = [
-  800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000,
-];
+
+const CODEFORCES_RATINGS = Array.from({ length: 23 }, (_, i) => 800 + i * 100);
 
 function App() {
   const [darkMode, setDarkMode] = useLocalStorage("darkMode", true);
