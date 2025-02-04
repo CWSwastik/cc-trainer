@@ -4,7 +4,7 @@ export const calculateAverageTime = (
   userRating: number
 ): number => {
   return (
-    10 + (50 / 3000) * problemRating ** 1.1 - (20 / 3000) * userRating ** 1.1
+    10 + (50 / 3000) * problemRating ** 1.1 - (20 / 3000) * userRating ** 1.125
   );
 };
 

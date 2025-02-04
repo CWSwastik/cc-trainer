@@ -92,6 +92,7 @@ export const Statistics: React.FC<StatisticsProps> = ({ solvedProblems }) => {
                   />
                   <YAxis
                     tick={{ fontSize: 12, fill: "#6b7280" }}
+                    tickFormatter={(value) => value.toFixed(2)}
                     domain={[0, "dataMax"]}
                   />
                   <Tooltip

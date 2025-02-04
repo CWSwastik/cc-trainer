@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Brain, Sun, Moon } from "lucide-react";
+import { Brain, Sun, Moon, Link } from "lucide-react";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { RatingChart } from "./components/RatingChart";
 import { ProblemTimer } from "./components/ProblemTimer";
@@ -15,7 +15,6 @@ const DEFAULT_SETTINGS: SettingsType = {
   kFactor: 32,
   decayConstant: 0.1,
 };
-
 
 const CODEFORCES_RATINGS = Array.from({ length: 23 }, (_, i) => 800 + i * 100);
 
@@ -70,35 +69,43 @@ function App() {
     setIsTimerRunning(true);
   };
 
-  const handleCompleteProblem = (timeSpent: number) => {
+  const handleCompleteProblem = (
+    timeSpent: number,
+    solved: boolean,
+    tookHelp: boolean
+  ) => {
     if (!currentProblem) return;
+    if (solved) {
+      let ratingChange = calculateRatingChange(
+        currentProblem.rating,
+        stats.currentRating,
+        timeSpent,
+        settings.kFactor,
+        settings.decayConstant
+      );
 
-    const ratingChange = calculateRatingChange(
-      currentProblem.rating,
-      stats.currentRating,
-      timeSpent,
-      settings.kFactor,
-      settings.decayConstant
-    );
+      if (tookHelp && ratingChange > 0) {
+        ratingChange = Math.floor(ratingChange / 2);
+      }
 
-    const newRating = Math.max(stats.currentRating + ratingChange, 0);
+      const newRating = Math.max(stats.currentRating + ratingChange, 0);
 
-    const completedProblem = {
-      ...currentProblem,
-      endTime: Date.now(),
-      timeSpent,
-      ratingChange,
-    };
+      const completedProblem = {
+        ...currentProblem,
+        endTime: Date.now(),
+        timeSpent,
+        ratingChange,
+      };
 
-    setStats({
-      currentRating: newRating,
-      solvedProblems: [...stats.solvedProblems, completedProblem],
-      ratingHistory: [
-        ...stats.ratingHistory,
-        { timestamp: Date.now(), rating: newRating },
-      ],
-    });
-
+      setStats({
+        currentRating: newRating,
+        solvedProblems: [...stats.solvedProblems, completedProblem],
+        ratingHistory: [
+          ...stats.ratingHistory,
+          { timestamp: Date.now(), rating: newRating },
+        ],
+      });
+    }
     setCurrentProblem(null);
     setIsTimerRunning(false);
   };
@@ -170,7 +177,7 @@ function App() {
           <div className="flex items-center gap-3">
             <Brain className="w-8 h-8 text-blue-500" />
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              CC Trainer v0.1
+              CC Practice Trainer v0.2
             </h1>
           </div>
           <div className="flex items-center gap-4">
@@ -236,6 +243,26 @@ function App() {
                   </div>
                 </div>
 
+                <div>
+                  <p className="text-xs text-gray-900 dark:text-gray-200">
+                    Tip: You can find a random problem on{" "}
+                    <a
+                      href={
+                        platform === "codeforces"
+                          ? "https://karimelghamry.github.io/Codeforces-Randomizer/"
+                          : "https://leetcode.com/problem-list/randomized/"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline"
+                    >
+                      {platform === "codeforces"
+                        ? "Codeforces Randomizer"
+                        : "LeetCode Randomizer"}
+                    </a>
+                    .
+                  </p>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {platform === "codeforces"
